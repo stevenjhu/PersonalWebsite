@@ -28,11 +28,11 @@ export const profile: Profile = {
     "I'm Steven — a full stack engineer who likes building things that are fast, " +
     "reliable, and a little delightful. I care about clean architecture, sensible " +
     "trade-offs, and shipping. When I'm not writing code, I'm usually behind a camera.",
-  email: "stevenjustinhu@gmail.com",
+  email: "shiqistevenhu@gmail.com",
   location: "",
   resumeUrl: import.meta.env.PUBLIC_RESUME_URL,
   socials: [
-    { label: "GitHub", href: "https://github.com/stevenjhu" },
+    { label: "GitHub", href: "https://github.com/57shiki" },
     { label: "LinkedIn", href: "https://www.linkedin.com/in/shiqi-hu57/" },
   ],
 };
