@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from "react";
-import { Send, CheckCircle2, AlertCircle } from "lucide-react";
+import { Send, CheckCircle2, AlertCircle, Mail } from "lucide-react";
+import { profile } from "../data/profile";
 
-type Status = "idle" | "submitting" | "success" | "error";
+type Status = "idle" | "submitting" | "success" | "error" | "cap_reached";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -48,6 +49,10 @@ export default function ContactForm() {
         const body = (await res.json().catch(() => null)) as {
           error?: string;
         } | null;
+        if (body?.error === "EMAIL_CAP_REACHED") {
+          setStatus("cap_reached");
+          return;
+        }
         throw new Error(
           body?.error ?? "Something went wrong. Please try again.",
         );
@@ -69,6 +74,28 @@ export default function ContactForm() {
         <CheckCircle2 className="text-accent-strong" aria-hidden />
         <p className="font-medium">Thanks — your message is on its way.</p>
         <p className="text-muted text-sm">I'll get back to you soon.</p>
+      </div>
+    );
+  }
+
+  if (status === "cap_reached") {
+    return (
+      <div
+        role="status"
+        className="border-border bg-surface flex flex-col items-center gap-3 rounded-xl border p-8 text-center"
+      >
+        <Mail className="text-accent-strong" aria-hidden />
+        <p className="font-medium">The contact form is temporarily unavailable.</p>
+        <p className="text-muted text-sm">
+          Please reach out to me directly at{" "}
+          <a
+            href={`mailto:${profile.email}`}
+            className="text-accent-strong underline underline-offset-2"
+          >
+            {profile.email}
+          </a>
+          .
+        </p>
       </div>
     );
   }

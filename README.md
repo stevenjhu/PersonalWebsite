@@ -11,6 +11,7 @@ Built for speed: fully static HTML/CSS at load time, with JavaScript only where 
 - [Tech stack](#tech-stack)
 - [Key tradeoffs](#key-tradeoffs)
 - [Architecture](#architecture)
+- [Notable implementation details](#notable-implementation-details)
 - [Project structure](#project-structure)
 - [Local development](#local-development)
 - [Editing content](#editing-content)
@@ -53,6 +54,23 @@ A portfolio is almost entirely static content — the trade-off is straightforwa
 - **App + API** ship together from this repo to Azure SWA (`output_location: dist`, `api_location: api`) via GitHub Actions.
 - **Photography** images are optimized locally and served from Cloudflare R2 as responsive `<img srcset>` — no runtime image service.
 
+## Notable implementation details
+
+**Contact form: hidden backend URL + shared secret**
+
+The Azure Functions URL is never exposed in the client bundle or the repository. The contact form posts to `/api/contact`, which is handled by a Cloudflare Pages Function (`functions/api/contact.ts`). The Pages Function reads the real Azure Functions URL and a shared secret from Cloudflare's encrypted environment variables at runtime, injects the secret as an `X-Internal-Secret` header, and proxies the request. Azure Functions rejects any request that omits or provides the wrong secret — so even if someone discovers the Azure URL, they cannot use it.
+
+**Spam protection**
+
+Two layers defend the contact endpoint without requiring a CAPTCHA:
+
+- *Honeypot field* — a hidden `company` input is present in the form markup but invisible and unfocusable to real users. Bots that auto-fill forms trigger it; the server silently returns a 200 so bots don't learn they were caught.
+- *In-memory rate limiter* — the Azure Function tracks submission timestamps per client IP (keyed from `X-Forwarded-For`) and rejects requests exceeding 5 per 10-minute window with a 429.
+
+**Email cap fallback**
+
+When the Resend API returns a 429 (monthly send limit reached), the server responds with a machine-readable `EMAIL_CAP_REACHED` error rather than a generic failure. The contact form detects this and renders a dedicated state that surfaces the author's direct email address, so the form degrading never leaves a visitor without a way to reach out.
+
 ## Project structure
 
 ```
@@ -68,14 +86,13 @@ api/            Azure Functions (contact endpoint)
 scripts/        optimize-and-upload-photos.ts (sharp → AVIF/WebP → R2)
 ```
 
-## Local development
+## Local deployment instruction
 
 ```bash
 npm install
 npm run dev        # start the dev server
-npm run build      # production build → dist/
-npm run preview    # preview the production build
 ```
+Then open the website at your localhost.
 
 ## Editing content
 
@@ -85,7 +102,7 @@ Content lives as typed data in `src/data/` — no component edits needed for rou
 - **Experience:** `src/data/experience.ts`
 - **Projects:** `src/data/projects.ts`
 - **Skills:** `src/data/skills.ts`
-- **Résumé:** drop the PDF at `public/resume.pdf`; the "Résumé" buttons link to it automatically.
+- **Résumé:** set the `PUBLIC_RESUME_URL` environment variable to the PDF URL (e.g. a Cloudflare R2 public URL); the "Résumé" buttons link to it automatically.
 - **Photography:**
   1. Create a local `photos/` folder (git-ignored, not in the repo) and put your web-sized source images in it.
   2. Run `npm run photos` to generate AVIF/WebP variants and upload them to Cloudflare R2.
