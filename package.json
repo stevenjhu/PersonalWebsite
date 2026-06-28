@@ -20,12 +20,15 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
+  "engines": {
+    "node": "~22"
+  },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
     "@aws-sdk/client-s3": "^3.726.0",
     "@eslint/js": "^9.18.0",
     "@tailwindcss/vite": "^4.0.0",
-    "@types/node": "^20.19.43",
+    "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "astro-eslint-parser": "^1.1.0",
