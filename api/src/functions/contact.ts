@@ -36,6 +36,12 @@ export async function contact(
   request: HttpRequest,
   context: InvocationContext,
 ): Promise<HttpResponseInit> {
+  const expectedSecret = process.env.INTERNAL_SECRET;
+  const secret = request.headers.get("x-internal-secret");
+  if (!expectedSecret || secret !== expectedSecret) {
+    return json(403, { error: "Forbidden." });
+  }
+
   let payload: ContactPayload;
   try {
     payload = (await request.json()) as ContactPayload;
@@ -97,6 +103,9 @@ export async function contact(
     if (!res.ok) {
       const detail = await res.text();
       context.error(`Resend error ${res.status}: ${detail}`);
+      if (res.status === 429) {
+        return json(503, { error: "EMAIL_CAP_REACHED" });
+      }
       return json(502, { error: "Failed to send message. Please try again." });
     }
   } catch (err) {
