@@ -30,8 +30,7 @@ export const profile: Profile = {
     "trade-offs, and shipping. When I'm not writing code, I'm usually behind a camera.",
   email: "stevenjustinhu@gmail.com",
   location: "",
-  // Drop the PDF at public/resume.pdf — this link works automatically.
-  resumeUrl: "/resume.pdf",
+  resumeUrl: import.meta.env.PUBLIC_RESUME_URL,
   socials: [
     { label: "GitHub", href: "https://github.com/stevenjhu" },
     { label: "LinkedIn", href: "https://www.linkedin.com/in/shiqi-hu57/" },
