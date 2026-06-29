@@ -1,3 +1,5 @@
+import { GITHUB_URL, LINKEDIN_URL } from "./social";
+
 export interface SocialLink {
   label: string;
   href: string;
@@ -32,7 +34,7 @@ export const profile: Profile = {
   location: "",
   resumeUrl: import.meta.env.PUBLIC_RESUME_URL,
   socials: [
-    { label: "GitHub", href: "https://github.com/57shiki" },
-    { label: "LinkedIn", href: "https://www.linkedin.com/in/shiqi-hu57/" },
+    { label: "GitHub", href: GITHUB_URL },
+    { label: "LinkedIn", href: LINKEDIN_URL },
   ],
 };
