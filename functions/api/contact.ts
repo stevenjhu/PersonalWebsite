@@ -1,6 +1,6 @@
 interface Env {
   AZURE_CONTACT_URL: string;
-  INTERNAL_SECRET: string;
+  CONTACT_FORM_SECRET: string;
 }
 
 export const onRequestPost = async (ctx: {
@@ -11,7 +11,7 @@ export const onRequestPost = async (ctx: {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-Internal-Secret": ctx.env.INTERNAL_SECRET,
+      "X-Internal-Secret": ctx.env.CONTACT_FORM_SECRET,
     },
     body: ctx.request.body,
   });
