@@ -14,7 +14,6 @@ Built for speed: fully static HTML/CSS at load time, with JavaScript only where 
 - [Notable implementation details](#notable-implementation-details)
 - [Project structure](#project-structure)
 - [Local development](#local-development)
-- [Editing content](#editing-content)
 - [Configuration](#configuration)
 - [License](#license)
 
@@ -105,19 +104,16 @@ npm run dev        # start the dev server
 ```
 Then open the website at your localhost.
 
-## Editing content
+**Resume**
 
-Content lives as typed data in `src/data/` — no component edits needed for routine updates.
+Upload `resume.pdf` to the `resume` R2 bucket. The "Résumé" buttons on the site serve it via `/api/resume`.
 
-- **Profile / tagline / socials:** `src/data/profile.ts`
-- **Experience:** `src/data/experience.ts`
-- **Projects:** `src/data/projects.ts`
-- **Skills:** `src/data/skills.ts`
-- **Résumé:** set the `PUBLIC_RESUME_URL` environment variable to the PDF URL (e.g. a Cloudflare R2 public URL); the "Résumé" buttons link to it automatically.
-- **Photography:**
-  1. Create a local `photos/` folder (git-ignored, not in the repo) and put your web-sized source images in it.
-  2. Run `npm run photos` to generate AVIF/WebP variants and upload them to Cloudflare R2.
-  3. Add an entry (base URL, dimensions, alt, caption) to `src/data/photos.ts`.
+**Photography**
+
+1. Create a local `photos/` folder (git-ignored) and put your source images in it.
+2. Fill in the R2 credentials in `.env` (see `.env.example`).
+3. Run `npm run photos` to generate AVIF/WebP variants and upload them to Cloudflare R2.
+4. Add an entry (base URL, dimensions, alt, caption) to `src/data/photos.ts`.
 
 ## Configuration
 
