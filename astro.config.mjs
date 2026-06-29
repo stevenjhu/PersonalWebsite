@@ -3,10 +3,13 @@ import { defineConfig, fontProviders } from "astro/config";
 import react from "@astrojs/react";
 import tailwindcss from "@tailwindcss/vite";
 
+import cloudflare from "@astrojs/cloudflare";
+
 // https://astro.build/config
 export default defineConfig({
   site: "https://shiqihu.com",
   integrations: [react()],
+
   // Fonts are downloaded at build time and self-hosted as woff2 — no runtime
   // request to a third-party font CDN. Astro generates metric-matched fallbacks
   // automatically to avoid layout shift.
@@ -37,7 +40,10 @@ export default defineConfig({
       },
     ],
   },
+
   vite: {
     plugins: [tailwindcss()],
   },
+
+  adapter: cloudflare()
 });
