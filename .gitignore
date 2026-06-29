@@ -37,3 +37,9 @@ yarn-error.log*
 .wrangler
 .dev.vars*
 !.dev.vars.example
+
+# ide
+.idea/
+
+# tool-generated cache with local paths
+.impeccable/hook.cache.json
