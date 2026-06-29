@@ -23,7 +23,7 @@ export const profile: Profile = {
   name: "Shiqi Hu",
   shortName: "Steven",
   role: "Full Stack Engineer",
-  // TODO: replace with the final lighthearted/quirky one-liner.
+
   tagline:
     "I turn caffeine into clean commits and the occasional working feature.",
   intro:
@@ -32,7 +32,7 @@ export const profile: Profile = {
     "trade-offs, and shipping. When I'm not writing code, I'm usually behind a camera.",
   email: "shiqistevenhu@gmail.com",
   location: "",
-  resumeUrl: import.meta.env.PUBLIC_RESUME_URL,
+  resumeUrl: "/api/resume",
   socials: [
     { label: "GitHub", href: GITHUB_URL },
     { label: "LinkedIn", href: LINKEDIN_URL },

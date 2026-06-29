@@ -13,5 +13,12 @@
   "assets": {
     "binding": "ASSETS",
     "directory": "dist"
-  }
+  },
+  "r2_buckets": [
+    {
+      "binding": "RESUME_BUCKET",
+      "bucket_name": "resume",
+      "remote": true
+    }
+  ]
 }
