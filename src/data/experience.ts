@@ -34,7 +34,7 @@ export const experience: ExperienceEntry[] = [
       "Migrated a legacy Excel-powered reporting system to SQL Server, cutting data processing time by 90% for the corporate banking team",
       "Automated reporting with SQL analytical tools over 800k+ client records and transaction histories, supporting a 10% lift in financial product conversion rates",
     ],
-    tech: ["SQL Server", "SQL Analytics"],
+    tech: ["SQL Server", "SQL Analytics", "VBA"],
   },
   {
     role: "Software Engineer Intern",
