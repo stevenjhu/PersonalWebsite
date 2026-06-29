@@ -2,7 +2,7 @@
 
 The code behind my corner of the internet — engineering work I'm proud of, photos I've taken, and a form you can use to reach me.
 
-Built for speed: fully static HTML/CSS at load time, with JavaScript only where interaction is needed — powered by Astro and React islands, deployed on Azure Static Web Apps with a serverless contact API and a Cloudflare R2 image pipeline.
+Built for speed: fully static HTML/CSS at load time, with JavaScript only where interaction is needed — powered by Astro and React islands, deployed on Cloudflare Workers with a serverless contact API and a Cloudflare R2 image pipeline.
 
 ## [→ Visit shiqihu.com](https://shiqihu.com)
 
@@ -22,13 +22,13 @@ Built for speed: fully static HTML/CSS at load time, with JavaScript only where 
 
 | Layer | Technology | Why |
 | --- | --- | --- |
-| Framework | **Astro 5** | Static-first, ships zero JavaScript by default; fast loads and strong SEO out of the box. |
+| Framework | **Astro 7** | Static-first, ships zero JavaScript by default; fast loads and strong SEO out of the box. |
 | Interactivity | **React 19 islands** | Interactive pieces (theme toggle, gallery lightbox, contact form) hydrate independently — JS is scoped to where it's needed. |
 | Language | **TypeScript (strict)** | End-to-end type safety across UI, data, and the serverless API. |
 | Styling | **Tailwind CSS v4** | Utility-first styling with a single design-token source of truth (CSS variables) driving light/dark themes. |
 | Animation | **Motion** | Subtle, accessible entrance and hover motion; respects `prefers-reduced-motion`. |
 | Icons | **lucide-react** | Tree-shakeable SVG icon set. |
-| Hosting & CI/CD | **Azure Static Web Apps** | Global CDN, free SSL, and a managed serverless API — all deployed together via GitHub Actions. |
+| Hosting & CI/CD | **Cloudflare Workers** | Global edge network, free SSL, deployed via `wrangler deploy` in GitHub Actions. |
 | API | **Azure Functions (Node 20, TS)** | The `/api/contact` endpoint validates input, applies a honeypot + rate limit, and sends email. |
 | Media | **Cloudflare R2** | S3-compatible object storage serving a responsive AVIF/WebP image pipeline for the photography gallery. |
 
@@ -40,36 +40,29 @@ A portfolio is almost entirely static content — the trade-off is straightforwa
 
 ## Architecture
 
+```mermaid
+flowchart LR
+    Visitor(["👤 Visitor"])
+
+    subgraph CF["Cloudflare"]
+        Worker["Workers (edge)\nAstro site"]
+        R2["R2\nAVIF/WebP photos"]
+    end
+
+    subgraph AZ["Azure"]
+        Func["Functions\n/api/contact"]
+        Email["📧 Resend (email)"]
+    end
+
+    Visitor -- HTTPS --> Worker
+    Visitor -- "img srcset (direct)" --> R2
+    Worker -- "POST /api/contact" --> Func
+    Func --> Email
 ```
-            ┌──────────────────────────────┐
- Visitor →  │  Azure Static Web Apps (CDN) │  ← Astro static build (dist/)
-            │                              │
-            │   /api/* → Azure Functions   │  ← POST /api/contact → email
-            └──────────────┬───────────────┘
-                           │ <img srcset>
-                           ↓
-                   Cloudflare R2 (AVIF/WebP photo variants)
-```
 
-- **App + API** ship together from this repo to Azure SWA (`output_location: dist`, `api_location: api`) via GitHub Actions.
-- **Photography** images are optimized locally and served from Cloudflare R2 as responsive `<img srcset>` — no runtime image service.
-
-## Notable implementation details
-
-**Contact form: hidden backend URL + shared secret**
-
-The Azure Functions URL is never exposed in the client bundle or the repository. The contact form posts to `/api/contact`, which is handled by a Cloudflare Pages Function (`functions/api/contact.ts`). The Pages Function reads the real Azure Functions URL and a shared secret from Cloudflare's encrypted environment variables at runtime, injects the secret as an `X-Internal-Secret` header, and proxies the request. Azure Functions rejects any request that omits or provides the wrong secret — so even if someone discovers the Azure URL, they cannot use it.
-
-**Spam protection**
-
-Two layers defend the contact endpoint without requiring a CAPTCHA:
-
-- *Honeypot field* — a hidden `company` input is present in the form markup but invisible and unfocusable to real users. Bots that auto-fill forms trigger it; the server silently returns a 200 so bots don't learn they were caught.
-- *In-memory rate limiter* — the Azure Function tracks submission timestamps per client IP (keyed from `X-Forwarded-For`) and rejects requests exceeding 5 per 10-minute window with a 429.
-
-**Email cap fallback**
-
-When the Resend API returns a 429 (monthly send limit reached), the server responds with a machine-readable `EMAIL_CAP_REACHED` error rather than a generic failure. The contact form detects this and renders a dedicated state that surfaces the author's direct email address, so the form degrading never leaves a visitor without a way to reach out.
+- **Cloudflare Workers** serves the Astro-built site at the edge (`wrangler deploy`).
+- **Cloudflare R2** hosts responsive AVIF/WebP photo variants; the browser fetches them directly via `<img srcset>` — no runtime image processing.
+- **Azure Functions** is a separate deployment (`api/`) that handles contact form submissions, validates input, and sends email via Resend.
 
 ## Project structure
 
@@ -110,7 +103,7 @@ Content lives as typed data in `src/data/` — no component edits needed for rou
 
 ## Configuration
 
-Runtime configuration is provided through environment variables (see `.env.example` for the variable names). Values are supplied via local `.env` for scripts and as Azure SWA application settings in production.
+Runtime configuration is provided through environment variables (see `.env.example` for the variable names). Values are supplied via local `.env` for scripts; in production, Cloudflare Workers secrets are set via `wrangler secret put` and Azure Functions settings are configured in the Azure portal.
 
 ## License
 

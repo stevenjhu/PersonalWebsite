@@ -36,7 +36,7 @@ export async function contact(
   request: HttpRequest,
   context: InvocationContext,
 ): Promise<HttpResponseInit> {
-  const expectedSecret = process.env.INTERNAL_SECRET;
+  const expectedSecret = process.env.CONTACT_FORM_SECRET;
   const secret = request.headers.get("x-internal-secret");
   if (!expectedSecret || secret !== expectedSecret) {
     return json(403, { error: "Forbidden." });

@@ -16,7 +16,7 @@ export const projects: Project[] = [
   {
     title: "This Portfolio",
     description:
-      "Static-first Astro site with React islands, deployed on Cloudflare Pages " +
+      "Static-first Astro site with React islands, deployed on Cloudflare Workers " +
       "with a serverless contact API and a Cloudflare R2 image pipeline.",
     tech: [
       "Astro",
