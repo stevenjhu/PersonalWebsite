@@ -46,6 +46,7 @@ flowchart LR
 
     subgraph CF["Cloudflare"]
         Worker["Workers (edge)\nAstro site"]
+        PagesFunc["Pages Function\n/api/contact\n(proxy)"]
         R2["R2\nAVIF/WebP photos"]
     end
 
@@ -55,8 +56,9 @@ flowchart LR
     end
 
     Visitor -- HTTPS --> Worker
+    Visitor -- "POST /api/contact" --> PagesFunc
     Visitor -- "img srcset (direct)" --> R2
-    Worker -- "POST /api/contact" --> Func
+    PagesFunc -- "proxy + X-Internal-Secret" --> Func
     Func --> Email
 ```
 
