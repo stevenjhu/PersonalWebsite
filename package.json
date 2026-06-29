@@ -23,12 +23,16 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
+  "engines": {
+    "node": "~22"
+  },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
     "@aws-sdk/client-s3": "^3.726.0",
     "@eslint/js": "^9.18.0",
     "@tailwindcss/vite": "^4.0.0",
-    "@types/node": "^20.19.43",
+    "@types/node": "^22.0.0",
+    "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "astro-eslint-parser": "^1.1.0",
@@ -43,5 +47,11 @@
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0",
     "wrangler": "^4.105.0"
+  },
+  "allowScripts": {
+    "sharp@0.34.5": true,
+    "sharp@0.33.5": true,
+    "esbuild@0.27.7": true,
+    "esbuild@0.25.12": true
   }
 }
