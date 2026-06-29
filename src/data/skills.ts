@@ -3,35 +3,21 @@ export interface SkillGroup {
   items: string[];
 }
 
-// Adjust to match the resume. Grouped for scannability.
 export const skills: SkillGroup[] = [
   {
-    category: "Frontend",
-    items: [
-      "TypeScript",
-      "React",
-      "Astro",
-      "Tailwind CSS",
-      "HTML/CSS",
-      "Accessibility",
-    ],
+    category: "Languages",
+    items: ["C#", "TypeScript", "JavaScript", "HTML", "CSS", "SQL"],
   },
   {
-    category: "Backend",
-    items: [
-      "Node.js",
-      "REST APIs",
-      "Serverless / Azure Functions",
-      "SQL",
-      "Auth",
-    ],
+    category: "Frameworks",
+    items: [".NET", "Blazor", "Entity Framework Core", "Telerik", "React", "Astro", "Tailwind", "Bootstrap"],
   },
   {
-    category: "DevOps & Cloud",
-    items: ["Azure", "Cloudflare", "GitHub Actions", "CI/CD", "Docker"],
+    category: "Cloud & DevOps",
+    items: ["Azure CI/CD", "Azure App Service", "APIM", "Azure Functions", "Cloudflare R2", "GitHub Actions"],
   },
   {
-    category: "Tools",
-    items: ["Git", "Vite", "ESLint / Prettier", "Vitest", "Figma"],
+    category: "Testing",
+    items: ["xUnit", "Moq", "Playwright", "Postman"],
   },
 ];
