@@ -1,60 +1,45 @@
 ---
-import { ArrowRight, Download } from "lucide-react";
+import { ArrowRight, ChevronDown } from "lucide-react";
 import { profile } from "../data/profile";
 ---
 
-<section id="top" class="relative overflow-hidden">
+<section id="top" class="relative flex min-h-[calc(100dvh-4rem)] flex-col overflow-hidden">
   <!-- Subtle warm radial wash behind the hero (late-afternoon light). -->
-  <div aria-hidden class="hero-wash pointer-events-none absolute inset-0 -z-10">
-  </div>
+  <div aria-hidden class="hero-wash pointer-events-none absolute inset-0 -z-10"></div>
 
-  <div
-    class="mx-auto flex max-w-5xl flex-col justify-center px-6 py-28 sm:py-36"
-  >
-    <p class="text-accent-strong mb-4 font-mono text-sm tracking-wide">
-      {profile.role}
-    </p>
-    <h1 class="text-display max-w-3xl">
-      {profile.name}<span class="text-accent-strong">.</span>
-    </h1>
-    <p class="text-muted mt-6 max-w-2xl text-lg sm:text-xl">
-      {profile.tagline}
-    </p>
+  <!-- Main content — centers within the flex-1 area so it never floats to the middle of excessive whitespace -->
+  <div class="flex flex-1 items-center">
+    <div class="mx-auto flex w-full max-w-5xl flex-col px-6 py-16">
+      <p class="text-accent-strong mb-4 font-mono text-sm tracking-wide">
+        {profile.role}
+      </p>
+      <h1 class="text-display max-w-3xl">
+        {profile.name}<span class="text-accent-strong">.</span>
+      </h1>
+      <p class="text-muted mt-6 max-w-2xl text-lg sm:text-xl">
+        {profile.tagline}
+      </p>
 
-    <div class="mt-10 flex flex-wrap items-center gap-4">
-      <a
-        href="#projects"
-        class="bg-accent text-text inline-flex items-center gap-2 rounded-lg px-5 py-2.5 font-medium transition-opacity hover:opacity-90"
-      >
-        View work
-        <ArrowRight size={16} aria-hidden />
-      </a>
-      <a
-        href={profile.resumeUrl}
-        class="border-border hover:bg-surface inline-flex items-center gap-2 rounded-lg border px-5 py-2.5 font-medium transition-colors"
-      >
-        <Download size={16} aria-hidden />
-        Résumé
-      </a>
+      <div class="mt-10 flex flex-wrap items-center gap-4">
+        <a
+          href="#projects"
+          class="bg-accent text-text inline-flex items-center gap-2 rounded-lg px-5 py-2.5 font-medium transition-opacity hover:opacity-90"
+        >
+          View work
+          <ArrowRight size={16} aria-hidden />
+        </a>
+      </div>
     </div>
-
-    <ul class="mt-10 flex items-center gap-5">
-      {
-        profile.socials.map((s) => (
-          <li>
-            <a
-              href={s.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-muted hover:text-text font-mono text-sm transition-colors"
-            >
-              {s.label} ↗
-            </a>
-          </li>
-        ))
-      }
-    </ul>
   </div>
+
+  <!-- Scroll hint — anchored to the bottom of the hero viewport, creates vertical tension -->
+  <a
+    href="#about"
+    aria-label="Scroll to about"
+    class="scroll-cue text-muted mx-auto inline-flex pb-8 opacity-40 transition-opacity hover:opacity-70 sm:pb-10"
+  >
+    <ChevronDown size={22} aria-hidden />
+  </a>
 </section>
 
 <style>
@@ -65,5 +50,21 @@ import { profile } from "../data/profile";
       color-mix(in oklab, var(--accent) 22%, transparent),
       transparent 70%
     );
+  }
+
+  /* Gentle downward nudge — transform only, no layout property animation. */
+  .scroll-cue {
+    animation: scroll-nudge 2.4s ease-in-out infinite;
+  }
+
+  @keyframes scroll-nudge {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(5px); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-cue {
+      animation: none;
+    }
   }
 </style>
