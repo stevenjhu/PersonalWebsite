@@ -29,16 +29,4 @@ export const projects: Project[] = [
     repoUrl: GITHUB_URL,
     featured: true,
   },
-  {
-    title: "Project Two",
-    description: "Placeholder — replace with a real project description.",
-    tech: ["TypeScript", "Node.js"],
-    repoUrl: GITHUB_URL,
-  },
-  {
-    title: "Project Three",
-    description: "Placeholder — replace with a real project description.",
-    tech: ["React", "PostgreSQL"],
-    repoUrl: GITHUB_URL,
-  },
 ];

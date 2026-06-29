@@ -24,7 +24,7 @@
     "react-dom": "^19.0.0"
   },
   "engines": {
-    "node": "~22"
+    "node": ">=24"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",

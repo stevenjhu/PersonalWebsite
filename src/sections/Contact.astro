@@ -1,7 +1,6 @@
 ---
 import SectionHeading from "../components/SectionHeading.astro";
 import ContactForm from "../components/ContactForm.tsx";
-import { profile } from "../data/profile";
 ---
 
 <section id="contact" class="border-border/60 bg-surface/40 border-t">
@@ -14,28 +13,6 @@ import { profile } from "../data/profile";
           Have a role, a project, or just want to say hi? Drop me a line — I
           read everything.
         </p>
-        <a
-          href={`mailto:${profile.email}`}
-          class="text-accent-strong hover:text-text font-mono transition-colors"
-        >
-          {profile.email}
-        </a>
-        <ul class="flex items-center gap-5">
-          {
-            profile.socials.map((s) => (
-              <li>
-                <a
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-muted hover:text-text font-mono text-sm transition-colors"
-                >
-                  {s.label} ↗
-                </a>
-              </li>
-            ))
-          }
-        </ul>
       </div>
 
       <ContactForm client:visible />
