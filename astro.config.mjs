@@ -43,11 +43,5 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
 
-  adapter: cloudflare({
-    imageService: 'compile',
-    // Remote proxy requires Cloudflare credentials. Use local Miniflare in CI
-    // (and locally when running `npm run test:e2e`) since E2E tests mock the
-    // API layer anyway.
-    dev: { remote: !process.env.CI },
-  })
+  adapter: cloudflare({ imageService: 'compile' })
 });
