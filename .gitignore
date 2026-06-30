@@ -26,6 +26,10 @@ handoff.md
 # claude code worktree artifacts
 .claude/
 
+# test artifacts
+test-results/
+playwright-report/
+
 # misc
 .DS_Store
 *.log

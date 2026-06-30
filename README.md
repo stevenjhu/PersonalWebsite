@@ -15,6 +15,7 @@ Built for speed: fully static HTML/CSS at load time, with JavaScript only where 
 - [Project structure](#project-structure)
 - [Local development](#local-development)
 - [Configuration](#configuration)
+- [Testing](#testing)
 - [License](#license)
 
 ## Tech stack
@@ -118,6 +119,42 @@ Upload `resume.pdf` to the `resume` R2 bucket. The "Résumé" buttons on the sit
 ## Configuration
 
 Runtime configuration is provided through environment variables (see `.env.example` for the variable names). Values are supplied via local `.env` for scripts; in production, Cloudflare Workers secrets are set via `wrangler secret put` and Azure Functions settings are configured in the Azure portal.
+
+## Testing
+
+The contact feature — the only stateful, user-facing piece with a real backend — has two layers of automated tests. Everything else on the site is static content with no branching logic worth testing.
+
+```bash
+npm test              # run both layers
+npm run test:unit     # unit tests only
+npm run test:e2e      # E2E tests only
+```
+
+### What is tested
+
+**Contact form UI (`ContactForm.tsx`)** — client-side validation (empty fields, invalid email), the honeypot field, button state during in-flight requests, and all four terminal UI states: idle, submitting, success, error, and email-cap fallback.
+
+**Contact API (`/api/contact`)** — server-side input validation (missing fields, bad email, length limits), honeypot silent-accept, in-memory rate limiting (per-IP window), environment variable guards, and the full Resend integration (correct payload shape, upstream 401/429/network-error handling).
+
+A full test case catalogue is in [tests/README.md](tests/README.md).
+
+### How they are tested
+
+**Unit tests** exercise each layer in isolation, keeping feedback instant and failures easy to locate:
+
+- The React component is rendered into a virtual DOM (jsdom). `fetch` is stubbed so state changes are driven by controlled mock responses — no server needed.
+- The API handler is called directly as a TypeScript function, bypassing HTTP entirely. The Cloudflare `env` binding and `fetch` are both stubbed, so every branch can be reached without a running Worker.
+
+**End-to-end tests** run a real Chromium browser against the live Astro dev server. `/api/contact` is intercepted by Playwright's network layer before it leaves the browser, so no emails are sent. The test helper waits for `form[data-hydrated]` — an attribute set by `useEffect` after React mounts — before interacting, which prevents the race condition where the SSR'd HTML is visible but event handlers are not yet attached.
+
+### Tool choices
+
+| Tool | Role | Why |
+|------|------|-----|
+| **Vitest** | Unit test runner | Native ES-module support and first-class TypeScript without a build step; Vite-based projects share config naturally. Fast watch mode and a Jest-compatible API mean no learning curve. |
+| **React Testing Library** | Component rendering | Encourages querying by accessible role/label rather than implementation details, so tests break when behaviour changes, not when markup is refactored. |
+| **@testing-library/user-event** | User interaction simulation | Fires the full sequence of browser events (`pointerdown`, `keydown`, `input`, `change`, `keyup`, `pointerup`, `click`) rather than a single synthetic event, catching bugs that a bare `fireEvent` misses. |
+| **Playwright** | E2E browser automation | First-class TypeScript, auto-waiting assertions, and built-in network interception (`page.route`) make it the natural fit here. The ability to intercept `/api/contact` at the network layer means E2E tests are self-contained and deterministic without a live email service. |
 
 ## License
 
