@@ -7,19 +7,15 @@ Built for speed: fully static HTML/CSS at load time, with JavaScript only where 
 ## [→ Visit shiqihu.com](https://shiqihu.com)
 
 ## Table of contents
-
-- [shiqihu.com — Personal Portfolio](#shiqihucom--personal-portfolio)
-  - [→ Visit shiqihu.com](#-visit-shiqihucom)
-  - [Table of contents](#table-of-contents)
-  - [Tech stack](#tech-stack)
-  - [Key tradeoffs](#key-tradeoffs)
-  - [Architecture](#architecture)
-  - [Notable implementation details](#notable-implementation-details)
-  - [Project structure](#project-structure)
-  - [Local deployment instruction](#local-deployment-instruction)
-  - [Configuration](#configuration)
-  - [Testing](#testing)
-  - [License](#license)
+- [Tech stack](#tech-stack)
+- [Key tradeoffs](#key-tradeoffs)
+- [Architecture](#architecture)
+- [Notable implementation details](#notable-implementation-details)
+- [Project structure](#project-structure)
+- [Local deployment instruction](#local-deployment-instruction)
+- [Configuration](#configuration)
+- [Testing](#testing)
+- [License](#license)
 
 ## Tech stack
 
