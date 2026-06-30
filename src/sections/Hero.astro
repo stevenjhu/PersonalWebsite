@@ -14,17 +14,14 @@ import { profile } from "../data/profile";
         {profile.eyebrow}
       </p>
       <h1 class="text-display max-w-3xl">
-        {profile.name}<span class="text-accent-strong">.</span>
+        {profile.name}<span class="text-accent">.</span><span class="hero-alias">{profile.shortName}</span>
       </h1>
       <p class="text-muted mt-6 max-w-2xl text-lg sm:text-xl">
         {profile.tagline}
       </p>
 
       <div class="mt-10 flex flex-wrap items-center gap-4">
-        <a
-          href="#projects"
-          class="bg-accent text-text inline-flex items-center gap-2 rounded-lg px-5 py-2.5 font-medium transition-opacity hover:opacity-90"
-        >
+        <a href="#experience" class="hero-cta">
           View work
           <ArrowRight size={16} aria-hidden />
         </a>
@@ -43,6 +40,48 @@ import { profile } from "../data/profile";
 </section>
 
 <style>
+  /* The name people actually call him — a quiet alias trailing the period,
+     sized down so it reads as an aside, not a second headline. */
+  .hero-alias {
+    font-size: 0.3em;
+    font-weight: 500;
+    letter-spacing: 0;
+    margin-left: 0.4em;
+    color: var(--muted);
+  }
+
+  /* Primary CTA: accent fill with espresso ink; on hover it deepens to muted
+     earth with cream ink and the arrow steps forward. Colors are fixed so the
+     button reads identically in light and dark. */
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.4rem;
+    border-radius: 0.5rem;
+    background: var(--accent);
+    color: #2a201c;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .hero-cta:hover {
+    background: #a48374;
+    color: #f1ede6;
+  }
+
+  .hero-cta svg {
+    transition: transform 0.2s ease;
+  }
+
+  .hero-cta:hover svg {
+    transform: translateX(3px);
+  }
+
   /* color-mix keeps the wash tied to the live accent token (and theme). */
   .hero-wash {
     background-image: radial-gradient(
@@ -65,6 +104,11 @@ import { profile } from "../data/profile";
   @media (prefers-reduced-motion: reduce) {
     .scroll-cue {
       animation: none;
+    }
+
+    .hero-cta,
+    .hero-cta svg {
+      transition: none;
     }
   }
 </style>
