@@ -1,6 +1,6 @@
 # Test suite
 
-Two layers of automated testing cover the contact feature — unit tests for isolated logic and E2E tests for the integrated, in-browser experience.
+Two layers of automated testing cover the contact feature: unit tests for isolated logic and E2E tests for the integrated, in-browser experience.
 
 Run all tests:
 
@@ -48,54 +48,30 @@ Tests the `ContactForm` React component in isolation using jsdom + React Testing
 
 ## Unit tests — `unit/contact-api.test.ts`
 
-Tests the `POST /api/contact` Cloudflare Worker handler directly, bypassing the HTTP layer. Resend (`fetch`) is stubbed; the Cloudflare `env` binding is mocked.
+Tests the `POST /api/contact` Cloudflare Worker handler directly, bypassing the HTTP layer. The handler is a thin proxy, so the upstream `fetch` to the Azure Function is stubbed and the Cloudflare `env` binding is mocked. Input validation, rate limiting, and Resend delivery live in the Azure Function and are covered in that service's own repository.
 
-### Section 3 — Server-side input validation
-
-| ID | Test |
-|----|------|
-| 3.1 | Returns 400 `{ error: "Invalid JSON body." }` for malformed JSON |
-| 3.2 | Returns 400 `{ error: "All fields are required." }` for an empty payload `{}` |
-| 3.3 | Returns 400 for an empty `name` string |
-| 3.4 | Returns 400 `{ error: "Please provide a valid email address." }` for a bad email |
-| 3.5 | Returns 400 for an email exceeding 254 characters |
-| 3.6 | Returns 400 `{ error: "Input too long." }` for a message exceeding 5 000 characters |
-| 3.7 | Returns 400 `{ error: "Input too long." }` for a name exceeding 200 characters |
-| 3.8 | Returns 200 `{ ok: true }` for a fully valid request with no `company` field |
-| 3.9 | Returns 200 for a valid request with an empty `company` field |
-| 3.10 | Returns 200 without calling Resend when the honeypot `company` field is non-empty (silent accept) |
-
-### Section 4 — Rate limiting
+### Section 3 — Request forwarding
 
 | ID | Test |
 |----|------|
-| 4.1 | Allows the first 5 requests from the same IP |
-| 4.2 | Blocks the 6th request from the same IP within the window (returns 429) |
-| 4.4 | Allows a different IP when another IP is rate-limited |
+| 3.1 | Forwards a `POST` to `AZURE_CONTACT_URL` with `Content-Type: application/json` and the `X-Internal-Secret` header taken from `env` |
+| 3.2 | Passes the request body through to Azure unchanged |
 
-### Section 5 — Environment variable guards
-
-| ID | Test |
-|----|------|
-| 5.1 | Returns 500 `{ error: "Email service is not configured." }` when `RESEND_API_KEY` is absent |
-| 5.2 | Returns 500 when `CONTACT_TO` is absent |
-| 5.3 | Returns 500 when `CONTACT_FROM` is absent |
-
-### Section 6 — Resend API integration
+### Section 4 — Response pass-through
 
 | ID | Test |
 |----|------|
-| 6.1 | Returns 200 and `POST`s to `https://api.resend.com/emails` for a valid request |
-| 6.1b | Sends the correct payload to Resend: `from`, `to`, `reply_to`, `subject`, and plain-text `body` |
-| 6.2 | Returns 502 when Resend responds with 401 (invalid key) |
-| 6.4 | Returns 503 `{ error: "EMAIL_CAP_REACHED" }` when Resend responds with 429 |
-| 6.5 | Returns 500 when `fetch` throws a network error |
+| 4.1 | Returns Azure's 200 status and `{ ok: true }` body |
+| 4.2 | Passes through a 400 validation error from Azure |
+| 4.3 | Passes through a 429 rate-limit response from Azure |
+| 4.4 | Passes through a 503 `{ error: "EMAIL_CAP_REACHED" }` response from Azure |
+| 4.5 | Always responds with `Content-Type: application/json`, verified on a 502 upstream failure |
 
 ---
 
 ## E2E tests — `e2e/contact.spec.ts`
 
-Full browser tests using Playwright (Chromium). The Astro dev server is started automatically. `/api/contact` is intercepted by Playwright's `page.route()` — no real emails are sent. The helper `gotoContactForm` scrolls the contact section into view to trigger Astro's `client:visible` hydration and waits for `form[data-hydrated]` (set by `useEffect` after React mounts) before interacting.
+Full browser tests using Playwright (Chromium). The Astro dev server is started automatically. `/api/contact` is intercepted by Playwright's `page.route()`, so no real emails are sent. The helper `gotoContactForm` scrolls the contact section into view to trigger Astro's `client:visible` hydration and waits for `form[data-hydrated]` (set by `useEffect` after React mounts) before interacting.
 
 ### Section 1 — Client-side validation (browser)
 

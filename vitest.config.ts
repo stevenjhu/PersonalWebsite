@@ -19,7 +19,7 @@ export default defineConfig({
     globals: true,
     include: ["tests/unit/**/*.test.{ts,tsx}"],
     setupFiles: ["tests/setup.ts"],
-    environmentMatchGlobs: [["tests/unit/contact-form.test.tsx", "jsdom"]],
+    // contact-form.test.tsx selects jsdom via its own `@vitest-environment` docblock.
     environment: "node",
   },
 });

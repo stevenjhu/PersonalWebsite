@@ -30,7 +30,7 @@ export const profile: Profile = {
     "I'm Steven — a full stack engineer who likes building things that are fast, " +
     "reliable, and a little delightful. I care about clean architecture, sensible " +
     "trade-offs, and shipping. When I'm not writing code, I'm usually behind a camera.",
-  email: "shiqistevenhu@gmail.com",
+  email: "potters.redox5z@icloud.com",
   location: "",
   resumeUrl: "/api/resume",
   socials: [
