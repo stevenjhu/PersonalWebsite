@@ -28,66 +28,40 @@ export function isR2Photo(photo: Photo): photo is R2Photo {
   return "base" in photo;
 }
 
-/**
- * Gallery entries. The placeholder below renders a real committed asset so the
- * section looks intentional before Cloudflare R2 is wired. Replace these with
- * R2Photo entries (just a `base`) once real photos are uploaded.
- */
 export const photos: Photo[] = [
   {
-    src: "/photo-placeholder.svg",
-    width: 1600,
-    height: 1067,
-    alt: "Placeholder photograph — sample gradient until real photos are added.",
-    caption: "photography · coming soon",
+    base: "https://img.shiqihu.com/iceland-black-sand-beach",
+    width: 666,
+    height: 1182,
+    alt: "Black sand beach in Iceland with crashing waves.",
+    caption: "Iceland · black sand beach",
   },
   {
-    src: "/photo-placeholder.svg",
-    width: 1920,
-    height: 1080,
-    alt: "Placeholder — wide landscape frame, coming soon.",
-    caption: "photography · coming soon",
+    base: "https://img.shiqihu.com/iceland-glacier",
+    width: 1328,
+    height: 2364,
+    alt: "Glacier in Iceland under an overcast sky.",
+    caption: "Iceland · glacier",
   },
   {
-    src: "/photo-placeholder.svg",
-    width: 1067,
-    height: 1600,
-    alt: "Placeholder — portrait frame, coming soon.",
-    caption: "photography · coming soon",
+    base: "https://img.shiqihu.com/iceland-mountain",
+    width: 5910,
+    height: 3324,
+    alt: "Mountain range in Iceland.",
+    caption: "Iceland · mountains",
   },
   {
-    src: "/photo-placeholder.svg",
-    width: 1600,
-    height: 1200,
-    alt: "Placeholder — 4:3 landscape frame, coming soon.",
-    caption: "photography · coming soon",
+    base: "https://img.shiqihu.com/iceland-tundra",
+    width: 5712,
+    height: 3213,
+    alt: "Open tundra landscape in Iceland.",
+    caption: "Iceland · tundra",
   },
   {
-    src: "/photo-placeholder.svg",
-    width: 1500,
-    height: 1500,
-    alt: "Placeholder — square frame, coming soon.",
-    caption: "photography · coming soon",
-  },
-  {
-    src: "/photo-placeholder.svg",
-    width: 2400,
-    height: 1350,
-    alt: "Placeholder — panoramic landscape frame, coming soon.",
-    caption: "photography · coming soon",
-  },
-  {
-    src: "/photo-placeholder.svg",
-    width: 1200,
-    height: 1600,
-    alt: "Placeholder — tall portrait frame, coming soon.",
-    caption: "photography · coming soon",
-  },
-  {
-    src: "/photo-placeholder.svg",
-    width: 1800,
-    height: 1200,
-    alt: "Placeholder — classic 3:2 landscape frame, coming soon.",
-    caption: "photography · coming soon",
+    base: "https://img.shiqihu.com/tampa-bridge",
+    width: 8064,
+    height: 4536,
+    alt: "Bridge over the bay in Tampa.",
+    caption: "Tampa · bridge",
   },
 ];

@@ -30,15 +30,15 @@ function requireEnv(key: string): string {
 }
 
 const accountId = requireEnv("R2_ACCOUNT_ID");
-const bucket = requireEnv("R2_BUCKET");
-const publicBase = process.env.R2_PUBLIC_BASE ?? "(set R2_PUBLIC_BASE)";
+const bucket = requireEnv("R2_BUCKET_PHOTO");
+const publicBase = process.env.R2_PUBLIC_BASE_PHOTO ?? "(set R2_PUBLIC_BASE_PHOTO)";
 
 const s3 = new S3Client({
   region: "auto",
   endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
   credentials: {
-    accessKeyId: requireEnv("R2_ACCESS_KEY_ID"),
-    secretAccessKey: requireEnv("R2_SECRET_ACCESS_KEY"),
+    accessKeyId: requireEnv("R2_ACCESS_KEY_ID_PHOTO"),
+    secretAccessKey: requireEnv("R2_SECRET_ACCESS_KEY_PHOTO"),
   },
 });
 
