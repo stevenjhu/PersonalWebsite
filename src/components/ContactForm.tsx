@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import { Send, CheckCircle2, AlertCircle, Mail } from "lucide-react";
 import { profile } from "../data/profile";
 
@@ -9,6 +9,8 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export default function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string>("");
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => { setHydrated(true); }, []);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -104,7 +106,7 @@ export default function ContactForm() {
     "w-full rounded-lg border border-border bg-bg px-4 py-2.5 text-text placeholder:text-muted/70 focus:border-accent-strong focus:outline-none";
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
+    <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate data-hydrated={hydrated ? "" : undefined}>
       {/* Honeypot field — visually hidden, ignored by humans. */}
       <div
         aria-hidden
