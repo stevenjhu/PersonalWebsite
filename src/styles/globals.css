@@ -149,3 +149,260 @@ p {
   outline-offset: 2px;
   border-radius: 2px;
 }
+
+/* ---- README lightbox ---- */
+#readme-dialog {
+  margin: auto;
+  width: min(820px, calc(100vw - 2rem));
+  max-height: min(85vh, 900px);
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.35);
+}
+
+#readme-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+#readme-dialog[open] {
+  animation: readme-pop 0.25s ease both;
+}
+
+@keyframes readme-pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+}
+
+.readme-shell {
+  display: flex;
+  flex-direction: column;
+  max-height: inherit;
+}
+
+.readme-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.readme-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  letter-spacing: -0.01em;
+}
+
+#readme-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem;
+  border-radius: 0.5rem;
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+#readme-close:hover {
+  color: var(--text);
+  background: var(--border);
+}
+
+.readme-prose {
+  overflow-y: auto;
+  padding: 1.75rem 1.5rem 2.25rem;
+  line-height: 1.7;
+}
+
+.readme-status {
+  color: var(--muted);
+}
+
+/* GitHub-rendered README content, restyled to match the site's type. */
+.readme-prose h1,
+.readme-prose h2,
+.readme-prose h3,
+.readme-prose h4 {
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  margin: 1.75em 0 0.6em;
+  scroll-margin-top: 0.5rem;
+  text-wrap: balance;
+}
+.readme-prose > :first-child {
+  margin-top: 0;
+}
+.readme-prose h1 {
+  font-size: 1.6rem;
+}
+.readme-prose h2 {
+  font-size: 1.3rem;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--border);
+}
+.readme-prose h3 {
+  font-size: 1.1rem;
+}
+.readme-prose p,
+.readme-prose ul,
+.readme-prose ol,
+.readme-prose blockquote,
+.readme-prose table,
+.readme-prose pre {
+  margin: 0 0 1em;
+}
+.readme-prose ul,
+.readme-prose ol {
+  padding-left: 1.4em;
+}
+.readme-prose ul {
+  list-style: disc;
+}
+.readme-prose ol {
+  list-style: decimal;
+}
+.readme-prose li + li {
+  margin-top: 0.3em;
+}
+.readme-prose a {
+  color: var(--accent-strong);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.readme-prose a:hover {
+  color: var(--text);
+}
+.readme-prose code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.1em 0.35em;
+}
+.readme-prose pre {
+  font-family: var(--font-mono);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+}
+.readme-prose pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: 0.82rem;
+}
+.readme-prose blockquote {
+  border-left: 3px solid var(--accent);
+  padding-left: 1em;
+  color: var(--muted);
+}
+.readme-prose img {
+  max-width: 100%;
+  height: auto;
+}
+.readme-prose hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 1.75em 0;
+}
+.readme-prose table {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+.readme-prose th,
+.readme-prose td {
+  border: 1px solid var(--border);
+  padding: 0.5em 0.75em;
+  text-align: left;
+}
+.readme-prose th {
+  background: var(--surface);
+}
+/* A rendered mermaid diagram fills the row; click it to enlarge. */
+.readme-prose .mermaid {
+  width: 100%;
+  margin: 0 0 1em;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--surface);
+  cursor: zoom-in;
+}
+.readme-prose .mermaid svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Enlarged-diagram overlay: the clicked chart at full size, scroll to read. */
+#diagram-dialog {
+  margin: auto;
+  width: min(96vw, 1400px);
+  height: min(92vh, 1000px);
+  max-width: 96vw;
+  max-height: 92vh;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.35);
+}
+#diagram-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(2px);
+}
+#diagram-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem;
+  border-radius: 0.5rem;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+#diagram-close:hover {
+  color: var(--text);
+  background: var(--border);
+}
+#diagram-stage {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  padding: 2.5rem;
+  display: grid;
+  place-items: center;
+}
+#diagram-stage svg {
+  max-width: none;
+}

@@ -2,7 +2,15 @@
 import SectionHeading from "../components/SectionHeading.astro";
 import TechTag from "../components/TechTag.astro";
 import { projects } from "../data/projects";
-import { Github, ExternalLink } from "lucide-react";
+import { GITHUB_URL, WEBSITE_REPO_RELATIVE_NAME } from "../data/social";
+import { Content as Readme } from "../../README.md";
+import { Github, ExternalLink, FileText, X } from "lucide-react";
+
+// The portfolio's README is this repo's own README, rendered to HTML at build
+// time by Astro's markdown pipeline — no runtime GitHub fetch, no rate limit,
+// no extra dependency. Only the project that points at this repo gets the
+// in-page reader.
+const websiteRepoUrl = `${GITHUB_URL}/${WEBSITE_REPO_RELATIVE_NAME}`;
 ---
 
 <section id="projects" class="mx-auto max-w-5xl px-6 py-20">
@@ -10,48 +18,248 @@ import { Github, ExternalLink } from "lucide-react";
 
   <div class="grid gap-6 sm:grid-cols-2">
     {
-      projects.map((p) => (
-        <article
-          class:list={[
-            "border-border bg-surface/50 flex flex-col rounded-xl border p-6 transition-transform duration-300 hover:-translate-y-1",
-            p.featured && "sm:col-span-2",
-          ]}
-        >
-          <div class="flex items-start justify-between gap-3">
-            <h3 class="text-lg font-semibold">{p.title}</h3>
-            <div class="text-muted flex items-center gap-3">
-              {p.repoUrl && (
-                <a
-                  href={p.repoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`${p.title} on GitHub`}
-                  class="hover:text-text transition-colors"
-                >
-                  <Github size={18} aria-hidden />
-                </a>
-              )}
-              {p.liveUrl && (
-                <a
-                  href={p.liveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`${p.title} live site`}
-                  class="hover:text-text transition-colors"
-                >
-                  <ExternalLink size={18} aria-hidden />
-                </a>
-              )}
+      projects.map((p) => {
+        const hasReadme = p.repoUrl === websiteRepoUrl;
+        return (
+          <article
+            class:list={[
+              "border-border bg-surface/50 group relative flex flex-col rounded-xl border p-6 transition-transform duration-300 hover:-translate-y-1",
+              p.featured && "sm:col-span-2",
+              hasReadme && "cursor-pointer",
+            ]}
+          >
+            <div class="flex items-start justify-between gap-3">
+              <h3 class="text-lg font-semibold">{p.title}</h3>
+              <div class="text-muted relative z-10 flex items-center gap-3">
+                {p.repoUrl && (
+                  <a
+                    href={p.repoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${p.title} on GitHub`}
+                    class="hover:text-text transition-colors"
+                  >
+                    <Github size={18} aria-hidden />
+                  </a>
+                )}
+                {p.liveUrl && (
+                  <a
+                    href={p.liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${p.title} live site`}
+                    class="hover:text-text transition-colors"
+                  >
+                    <ExternalLink size={18} aria-hidden />
+                  </a>
+                )}
+              </div>
             </div>
-          </div>
-          <p class="text-muted mt-3 flex-1">{p.description}</p>
-          <div class="mt-4 flex flex-wrap gap-2">
-            {p.tech.map((t) => (
-              <TechTag label={t} />
-            ))}
-          </div>
-        </article>
-      ))
+            <p class="text-muted mt-3 flex-1">{p.description}</p>
+            <div class="mt-4 flex flex-wrap gap-2">
+              {p.tech.map((t) => (
+                <TechTag label={t} />
+              ))}
+            </div>
+            {hasReadme && (
+              <>
+                <span class="text-accent-strong group-hover:text-text mt-4 inline-flex w-fit items-center gap-1.5 text-sm font-medium transition-colors">
+                  <FileText size={15} aria-hidden />
+                  Read me
+                </span>
+                <button
+                  type="button"
+                  class="absolute inset-0 z-0 rounded-xl"
+                  data-readme
+                  data-readme-title={p.title}
+                  aria-label={`Open the README for ${p.title}`}
+                />
+              </>
+            )}
+          </article>
+        );
+      })
     }
   </div>
+
+  {/* ── README lightbox (content rendered at build time, hidden until open) ── */}
+  <dialog id="readme-dialog" aria-labelledby="readme-title">
+    <div class="readme-shell">
+      <header class="readme-header">
+        <h2 id="readme-title" class="readme-title">README</h2>
+        <button type="button" id="readme-close" aria-label="Close README">
+          <X size={20} aria-hidden />
+        </button>
+      </header>
+      <div id="readme-body" class="readme-prose"><Readme /></div>
+    </div>
+  </dialog>
+
+  {/* ── Enlarged-diagram overlay (a clicked mermaid chart, shown full size) ── */}
+  <dialog id="diagram-dialog" aria-label="Enlarged diagram">
+    <button type="button" id="diagram-close" aria-label="Close diagram">
+      <X size={22} aria-hidden />
+    </button>
+    <div id="diagram-stage"></div>
+  </dialog>
 </section>
+
+<script>
+  const dialog = document.getElementById(
+    "readme-dialog",
+  ) as HTMLDialogElement | null;
+  const titleEl = document.getElementById("readme-title");
+  const bodyEl = document.getElementById("readme-body");
+  const closeBtn = document.getElementById("readme-close");
+  const diagramDialog = document.getElementById(
+    "diagram-dialog",
+  ) as HTMLDialogElement | null;
+  const diagramStage = document.getElementById("diagram-stage");
+  const diagramClose = document.getElementById("diagram-close");
+  const triggers = Array.from(
+    document.querySelectorAll<HTMLButtonElement>("[data-readme]"),
+  );
+
+  if (dialog && titleEl && bodyEl && closeBtn && diagramDialog && diagramStage) {
+    // Mermaid is a heavy client-only library, so it's loaded lazily the first
+    // time the reader is opened — it never touches initial page load. GitHub's
+    // fenced ```mermaid block is rendered by Astro as a plain code block; we
+    // hand its source to mermaid.js ourselves.
+    let mermaidPromise: Promise<any> | null = null;
+    const getMermaid = () => {
+      if (!mermaidPromise) {
+        const url =
+          "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaidPromise = import(/* @vite-ignore */ url).then((m) => m.default);
+      }
+      return mermaidPromise;
+    };
+
+    // Click a rendered diagram to see it full size in a scrollable overlay —
+    // readable for wide flowcharts, with no fiddly pan/zoom of our own.
+    const openDiagram = (svg: SVGElement) => {
+      const clone = svg.cloneNode(true) as SVGElement;
+      const vb = (svg as any).viewBox?.baseVal;
+      clone.style.maxWidth = "none";
+      if (vb && vb.width && vb.height) {
+        clone.style.width = `${Math.round(vb.width)}px`;
+        clone.style.height = `${Math.round(vb.height)}px`;
+      }
+      diagramStage.replaceChildren(clone);
+      diagramDialog.showModal();
+    };
+
+    // Mermaid diagrams are hidden for now. Flip to true to restore the
+    // rendered chart and its click-to-enlarge overlay.
+    const SHOW_MERMAID: boolean = false;
+
+    let mermaidDone = false;
+    const renderMermaid = async () => {
+      if (mermaidDone) return;
+      mermaidDone = true;
+
+      const codes = Array.from(
+        bodyEl.querySelectorAll<HTMLElement>("pre > code.language-mermaid"),
+      );
+      if (codes.length === 0) return;
+
+      // Temporarily hidden: drop the raw block rather than render a diagram.
+      if (!SHOW_MERMAID) {
+        for (const code of codes) (code.closest("pre") ?? code).remove();
+        return;
+      }
+
+      const nodes: HTMLElement[] = [];
+      for (const code of codes) {
+        const el = document.createElement("div");
+        el.className = "mermaid";
+        el.textContent = code.textContent ?? "";
+        (code.closest("pre") ?? code).replaceWith(el);
+        nodes.push(el);
+      }
+
+      try {
+        const mermaid = await getMermaid();
+        // Measure labels with the same web font that paints them, otherwise
+        // mermaid sizes the boxes too small and clips the text.
+        if (document.fonts?.ready) await document.fonts.ready;
+        const dark = document.documentElement.dataset.theme === "dark";
+        const fontFamily = getComputedStyle(document.body).fontFamily;
+        mermaid.initialize({
+          startOnLoad: false,
+          securityLevel: "strict",
+          theme: dark ? "dark" : "default",
+          fontFamily,
+          flowchart: { htmlLabels: true, useMaxWidth: true },
+        });
+        await mermaid.run({ nodes });
+        for (const node of nodes) {
+          const svg = node.querySelector("svg");
+          if (!svg) continue;
+          node.addEventListener("click", () => openDiagram(svg));
+        }
+      } catch (err) {
+        console.error("Could not render mermaid diagram", err);
+      }
+    };
+
+    const open = (title: string) => {
+      titleEl.textContent = `${title} · README`;
+      dialog.showModal();
+      document.body.style.overflow = "hidden";
+      bodyEl.scrollTop = 0;
+      void renderMermaid();
+    };
+
+    // In-page TOC links: smooth-scroll the matching heading into view within
+    // the dialog instead of letting the browser jump and append a #hash. Astro
+    // slugs headings with the same algorithm the README's TOC was written for.
+    bodyEl.addEventListener("click", (e) => {
+      const link = (e.target as HTMLElement).closest<HTMLAnchorElement>(
+        'a[href^="#"]',
+      );
+      if (!link) return;
+      const raw = decodeURIComponent(link.getAttribute("href")!.slice(1));
+      if (!raw) return;
+      const target = bodyEl.querySelector(`#${CSS.escape(raw)}`);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+
+    closeBtn.addEventListener("click", () => dialog.close());
+    diagramClose?.addEventListener("click", () => diagramDialog.close());
+    // Click on the backdrop (the dialog element itself, outside its content).
+    dialog.addEventListener("click", (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+    diagramDialog.addEventListener("click", (e) => {
+      if (e.target === diagramDialog) diagramDialog.close();
+    });
+    // Escape closes whichever dialog is focused (handled explicitly so it works
+    // reliably for the nested enlarge overlay, not just the top-level reader).
+    dialog.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        dialog.close();
+      }
+    });
+    diagramDialog.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        diagramDialog.close();
+      }
+    });
+    dialog.addEventListener("close", () => {
+      // Keep scroll locked while the nested diagram overlay is still open.
+      if (!diagramDialog.open) document.body.style.overflow = "";
+    });
+
+    for (const btn of triggers) {
+      btn.addEventListener("click", () =>
+        open(btn.dataset.readmeTitle ?? "Project"),
+      );
+    }
+  }
+</script>

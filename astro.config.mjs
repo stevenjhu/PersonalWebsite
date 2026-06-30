@@ -39,6 +39,13 @@ export default defineConfig({
     },
   ],
 
+  // README is rendered at build time and restyled to match the site's type.
+  // Skip Shiki's hard-coded color theme so code blocks inherit the warm,
+  // theme-aware prose styling instead of a fixed dark background.
+  markdown: {
+    syntaxHighlight: false,
+  },
+
   vite: {
     plugins: [tailwindcss()],
   },
